@@ -1,0 +1,12 @@
+@import './blocks/content.css';
+
+ul {
+  list-style-type: none;
+}
+
+#status {
+  color: green;
+}
+.hidden {
+  display: none;
+}
