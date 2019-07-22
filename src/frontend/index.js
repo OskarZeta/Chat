@@ -11,9 +11,18 @@ function addMessage(username, message) {
   li.innerHTML = `${username}: ${message}`;
   messages.appendChild(li);
 }
-function renderUsers(array) {
+function setNickname(value) {
+  const nickname = document.getElementById('nickname');
+  nickname.innerHTML = value;
+}
+function renderUserList(array) {
   const users = document.getElementById('users');
   users.innerHTML = '';
+  array = array.slice(0).sort((a, b) => {
+    a = a.name.toLowerCase();
+    b = b.name.toLowerCase();
+    return a < b ? -1 : a > b ? 1 : 0; 
+  });
   array.forEach(user => {
     const li = document.createElement('li');
     li.innerHTML = user.name;
@@ -24,11 +33,14 @@ function setStatus(value) {
   const status = document.getElementById('status');
   status.innerHTML = value;
 }
-function hideElement(element) {
-  element.classList.add('hidden');
-}
 function setPlaceholder(element, text) {
   element.placeholder = text;
+}
+
+// app logic
+
+function validateNickname(name) {
+  return !(name.length < 3 || name.match(/Guest/i));
 }
 
 // app event listeners
@@ -43,18 +55,15 @@ form.addEventListener('submit', e => {
   if (text === 'exit') {
     data.type = 'exit';
   } else if (!logged) {
-    if (text.length < 3) {
+    if (!validateNickname(text)) {
       alert('Invalid username!');
       return;
     }
-    logged = true;
-    hideElement(document.getElementById('guest'));
-    setPlaceholder(document.getElementById('input'), 'Type your message');
     data.type = 'name';
   }
   webSocket.send(JSON.stringify(data));
   input.value = '';
-})
+});
 
 // websocket event listeners
 webSocket.onopen = () => setStatus('ONLINE');
@@ -63,13 +72,26 @@ webSocket.onmessage = res => {
   let data = JSON.parse(res.data);
   switch (data.type) {
     case 'clients' : {
-      let clients = data.payload;
-      renderUsers(clients);
+      let { users } = data.payload;
+      renderUserList(users);
+      break;
+    }
+    case 'default-user' : {
+      let { currentUser } = data.payload;
+      setNickname(currentUser.name);
+      break;
+    }
+    case 'user' : {
+      let { currentUser } = data.payload;
+      let textField = document.getElementById('input');
+      logged = true;
+      setNickname(currentUser.name);
+      setPlaceholder(textField, 'Type your message');
       break;
     }
     case 'message' : {
-      const { name, message } = data.payload;
-      addMessage(name, message);
+      const { currentUser, message } = data.payload;
+      addMessage(currentUser.name, message);
       break;
     }
   }

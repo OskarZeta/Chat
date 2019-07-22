@@ -1,31 +1,38 @@
 const express = require('express');
 const server = express();
 const expressWs = require('express-ws')(server);
-//const path = require('path');
 const uuid = require('uuid');
 
 let connections = {};
 let counter = 0;
 let users = [];
 
+function findUserIndex(id, usersArray) {
+  return usersArray.findIndex(user => user.id === id);
+}
+function findUser(id, usersArray) {
+  return usersArray.find(user => user.id === id);
+}
+function sendDataToAll(type, payload) {
+  const clients = expressWs.getWss().clients;
+  clients.forEach(client => {
+    client.send(JSON.stringify({ type, payload }));
+  });
+}
+function sendDataToClient(type, payload, client) {
+  client.send(JSON.stringify({ type, payload }));
+}
+
 server.ws('/', (ws, req) => {
   counter++;
   const id = uuid.v4();
-  const clients = expressWs.getWss().clients;
   const defaultName = `Guest_${counter}`;
   connections[id] = ws;
 
-  function findUserIndex(id) {
-    return users.findIndex(user => user.id === id);
-  }
-  function sendData(type, payload) {
-    clients.forEach(client => {
-      client.send(JSON.stringify({ type, payload }));
-    });
-  }
-
   users.push({ id, name: defaultName });
-  sendData('clients', users);
+  const currentUser = findUser(id, users);
+  sendDataToAll('clients', { users });
+  sendDataToClient('default-user', { currentUser }, ws);
 
   ws.on('message', msg => {
     msg = JSON.parse(msg);
@@ -35,21 +42,21 @@ server.ws('/', (ws, req) => {
         break;
       }
       case 'name' : {
-        users[findUserIndex(id)].name = msg.payload;
-        sendData('clients', users);
+        currentUser.name = msg.payload;
+        sendDataToAll('clients', { users });
+        sendDataToClient('user', { currentUser }, ws);
         break;
       }
       case 'message' : {
-        sendData('message', { name: users[findUserIndex(id)].name, message: msg.payload });
+        sendDataToAll('message', { currentUser, message: msg.payload });
         break;
       }
     }
   });
-
   ws.on('close', req => {
     delete connections[id];
-    users.splice(findUserIndex(id), 1);
-    sendData('clients', users);
+    users.splice(findUserIndex(id, users), 1);
+    sendDataToAll('clients', { users });
   });
 });
 
