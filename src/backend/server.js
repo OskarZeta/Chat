@@ -48,7 +48,9 @@ server.ws('/', (ws, req) => {
         break;
       }
       case 'message' : {
-        sendDataToAll('message', { currentUser, message: msg.payload });
+        let message = msg.payload;
+        let timestamp = msg.timestamp;
+        sendDataToAll('message', { currentUser, message, timestamp });
         break;
       }
     }

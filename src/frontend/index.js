@@ -5,10 +5,12 @@ const webSocket = new WebSocket(URL_DEV);
 let logged = false;
 
 // DOM manipulations
-function addMessage(username, message) {
+function addMessage(username, message, timestamp) {
   const messages = document.getElementById('messages');
   const li = document.createElement('li');
-  li.innerHTML = `${username}: ${message}`;
+  const date = parseTimestamp(timestamp);
+  const time = `${date.hours}:${date.minutes}:${date.seconds}`;
+  li.innerHTML = `[${time}]${username}: ${message}`;
   messages.appendChild(li);
 }
 function setNickname(value) {
@@ -42,6 +44,14 @@ function setPlaceholder(element, text) {
 function validateNickname(name) {
   return !(name.length < 3 || name.match(/Guest/i));
 }
+function parseTimestamp(timestamp) {
+  let date = new Date(timestamp);
+  return {
+    hours: date.getHours(),
+    minutes: date.getMinutes(),
+    seconds: date.getSeconds()
+  };
+}
 
 // app event listeners
 const form = document.getElementById('form');
@@ -61,6 +71,7 @@ form.addEventListener('submit', e => {
     }
     data.type = 'name';
   }
+  data.timestamp = Date.now();
   webSocket.send(JSON.stringify(data));
   input.value = '';
 });
@@ -90,8 +101,8 @@ webSocket.onmessage = res => {
       break;
     }
     case 'message' : {
-      const { currentUser, message } = data.payload;
-      addMessage(currentUser.name, message);
+      const { currentUser, message, timestamp } = data.payload;
+      addMessage(currentUser.name, message, timestamp);
       break;
     }
   }
