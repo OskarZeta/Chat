@@ -2,6 +2,7 @@ const express = require('express');
 const server = express();
 const expressWs = require('express-ws')(server);
 const uuid = require('uuid');
+const port = process.env.PORT || 4000;
 
 let connections = {};
 let counter = 0;
@@ -62,4 +63,4 @@ server.ws('/', (ws, req) => {
   });
 });
 
-server.listen(4000);
+server.listen(port);
