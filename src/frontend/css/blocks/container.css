@@ -1,0 +1,24 @@
+.container {
+  width: 768px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.container--header {
+  background: #464646;
+}
+.container--chat {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #464646;
+}
+@media (min-width: 992px) {
+  .container {
+    width: 992px;
+  }
+}
+@media (min-width: 1200px) {
+  .container {
+    width: 1200px;
+  }
+}

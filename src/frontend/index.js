@@ -7,11 +7,29 @@ let logged = false;
 // DOM manipulations
 function addMessage(username, message, timestamp) {
   const messages = document.getElementById('messages');
+  setChatHeight(messages.clientHeight);
   const li = document.createElement('li');
+  li.classList.add('chat__message');
   const date = parseTimestamp(timestamp);
-  const time = `${date.hours}:${date.minutes}:${date.seconds}`;
-  li.innerHTML = `[${time}]${username}: ${message}`;
+  let { hours, minutes, seconds } = date;
+  if (hours < 10) hours = '0' + hours;
+  if (minutes < 10) minutes = '0' + minutes;
+  if (seconds < 10) seconds = '0' + seconds;
+  const time = `${hours}:${minutes}:${seconds}`;
+  li.innerHTML = `
+    <span class="chat__timestamp">[${time}]</span>
+    <span class="chat__username">${username}:</span> 
+    <span class="chat__text">${message}</span>
+  `;
   messages.appendChild(li);
+  scrollDown(messages);
+}
+function scrollDown(element) {
+  element.scrollTop = element.scrollHeight;
+}
+function setChatHeight(value) {
+  const chat = document.querySelector('.chat__wrapper');
+  chat.style.height = value + 'px';
 }
 function setNickname(value) {
   const nickname = document.getElementById('nickname');
@@ -27,13 +45,22 @@ function renderUserList(array) {
   });
   array.forEach(user => {
     const li = document.createElement('li');
+    li.classList.add('chat__user');
     li.innerHTML = user.name;
     users.appendChild(li);
   });
 }
 function setStatus(value) {
   const status = document.getElementById('status');
-  status.innerHTML = value;
+  if (value) {
+    status.classList.remove('content__status-value--offline');
+    status.classList.add('content__status-value--online');
+    status.innerHTML = 'ONLINE';
+  } else {
+    status.classList.remove('content__status-value--online');
+    status.classList.add('content__status-value--offline');
+    status.innerHTML = 'OFFLINE';
+  }
 }
 function setPlaceholder(element, text) {
   element.placeholder = text;
@@ -77,8 +104,8 @@ form.addEventListener('submit', e => {
 });
 
 // websocket event listeners
-webSocket.onopen = () => setStatus('ONLINE');
-webSocket.onclose = () => setStatus('OFFLINE');
+webSocket.onopen = () => setStatus(true);
+webSocket.onclose = () => setStatus(false);
 webSocket.onmessage = res => {
   let data = JSON.parse(res.data);
   switch (data.type) {

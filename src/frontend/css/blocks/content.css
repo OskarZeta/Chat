@@ -1,10 +1,18 @@
 .content {
   display: flex;
+  flex-direction: column;
+  flex-grow: 2;
 }
-.content__users {
-  background: darkblue;
-  color: white;
+.content__status {
+  text-align: center;
 }
-.content__messages {
-  background: lightblue;
+.content__status-value {
+  font-size: 30px;
+  line-height: 32px;
+}
+.content__status-value--offline {
+  color: #dc3545;
+}
+.content__status-value--online {
+  color: #28a745;
 }

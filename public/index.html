@@ -1,27 +1,41 @@
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="assets/css/bundle.css">
-    <link href="favicon.ico" rel="icon" type="image/x-icon">
-    <title>Zetachat 2.0</title>
-  </head>
-  <body>
-    <header>
-      <h1>Zetachat 2.0</h1>
-    </header>
-    <main>
-      <div id="status">OFFLINE</div>
-      <div class="content">
-        <ul class="content__users" id="users"></ul>
-        <ul class="content__messages" id="messages"></ul>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="assets/css/bundle.css">
+  <link href="favicon.ico" rel="icon" type="image/x-icon">
+  <!-- <link href="https://fonts.googleapis.com/css?family=VT323&display=swap" rel="stylesheet"> -->
+  <title>Zetachat 2.0</title>
+</head>
+<body>
+  <div class="app app--dark">
+    <header class="header">
+      <div class="container container--header">
+        <h1>zetachat</h1>
+        <span class="header__version">v2.0</span>
       </div>
-      <form id="form">
-        <div>
-          <span id="nickname">Guest</span>
-          <input type="text" id="input" required autofocus autocomplete="off" placeholder="Enter your nickname">
+    </header>
+    <main class="content">
+      <section class="content__status">
+        <div class="container">
+          <span class="content__status-value content__status-value--offline" id="status">OFFLINE</span>
         </div>
-      </form>
+      </section>
+      <section class="chat">
+        <div class="container container--chat">
+          <div class="chat__wrapper">
+            <ul class="chat__users" id="users"></ul>
+            <ul class="chat__messages" id="messages"></ul>
+          </div>
+          <form class="chat__form" id="form">
+            <div class="chat__form-wrapper">
+              <span class="chat__form-nickname" id="nickname">Guest</span>
+              <input class="chat__form-input" type="text" id="input" required autofocus autocomplete="off" placeholder="Enter your nickname">
+            </div>
+          </form>
+        </div>
+      </section>
     </main>
-    <script src="assets/js/bundle.js"></script>
-  </body>
+  </div>
+  <script src="assets/js/bundle.js"></script>
+</body>
 </html>
