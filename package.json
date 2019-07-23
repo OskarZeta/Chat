@@ -6,8 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "set NODE_ENV=production && webpack",
-    "start": "set NODE_ENV=development && webpack-dev-server",
-    "server": "nodemon src/backend/server.js"
+    "start": "node src/backend/server.js",
+    "start-dev": "set NODE_ENV=development && webpack-dev-server",
+    "server" : "nodemon src/backend/server.js"
   },
   "keywords": [],
   "author": "",

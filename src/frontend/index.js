@@ -1,7 +1,7 @@
 import './css/style.css';
 
 // globals
-const webSocket = new WebSocket(URL_DEV);
+const webSocket = new WebSocket(URL);
 let logged = false;
 
 // DOM manipulations
@@ -69,7 +69,7 @@ function setPlaceholder(element, text) {
 // app logic
 
 function validateNickname(name) {
-  return !(name.length < 3 || name.match(/Guest/i));
+  return !(name.length < 3 || name.length > 10 || name.match(/Guest/i));
 }
 function parseTimestamp(timestamp) {
   let date = new Date(timestamp);
